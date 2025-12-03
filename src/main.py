@@ -24,5 +24,19 @@ async def demo_query(query: str):
 
 if __name__ == '__main__':
     import os
-    q = os.environ.get('DEMO_QUERY', 'What is the main point of the documents?')
-    asyncio.run(demo_query(q))
+    # 1. If DEMO_QUERY env var is set → use it
+    env_query = os.environ.get("DEMO_QUERY")
+
+    # 2. Otherwise, ask the user
+    if env_query:
+        query = env_query
+    else:
+        query = input("\n🔍 Enter your query: ")
+
+        # fallback if the user pressed Enter without typing anything
+        if not query.strip():
+            query = "What is the main point of the documents?"
+
+    print(f"\n👉 Running multi-agent RAG on query:\n{query}\n")
+    
+    asyncio.run(demo_query(query))
