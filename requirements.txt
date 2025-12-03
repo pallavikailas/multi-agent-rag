@@ -1,9 +1,34 @@
 groq
-langchain>=0.0.300
+
+# LangChain core + community split
+langchain==1.1.0
+langchain-core
+langchain-community
+langchain-text-splitters
+
+# LangGraph
+langgraph
+
+# Document loaders & PDF support
+pypdf
+unstructured
+unstructured[pdf]
+
+# Vectorstores
 chromadb
 faiss-cpu
+
+# Embeddings
+sentence-transformers
+huggingface-hub
+
+# Env, requests, etc.
 python-dotenv
 requests
 tenacity
 pydantic
+tqdm
+
+# Optional server
 uvicorn[standard]
+fastapi
