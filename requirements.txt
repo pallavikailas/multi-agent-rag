@@ -1,0 +1,9 @@
+groq
+langchain>=0.0.300
+chromadb
+faiss-cpu
+python-dotenv
+requests
+tenacity
+pydantic
+uvicorn[standard]
