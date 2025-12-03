@@ -6,7 +6,7 @@ class QARetrievalAgent(BaseAgent):
         self.retriever = retriever
 
     async def run(self, query: str) -> str:
-        docs = self.retriever.get_relevant_documents(query)
+        docs = await self.retriever.ainvoke(query)
         context_text = "\n\n".join([d.page_content for d in docs[:6]])
         prompt = (
             "Use the context to answer the question. If answer not in context, reply 'I don't know'.\n\n"
