@@ -27,6 +27,7 @@ python-dotenv
 requests
 tenacity
 pydantic
+pydantic-settings
 tqdm
 
 # Optional server
