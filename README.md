@@ -189,8 +189,11 @@ GROQ_API_KEY= <enter your api key here>
 ```
 docker-compose build
 docker-compose up
+docker-compose run -e DEMO_QUERY="What does Rule 10b-5(b) require?" app
 ```
-
+```
+docker-compose down
+```
 ---
 
 # ✔ Assignment Checklist
