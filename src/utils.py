@@ -14,20 +14,28 @@ def retry_on_rate_limit():
     )
 
 @retry_on_rate_limit()
-def call_groq(prompt: str, model: str = "llama-3-small", max_tokens: int = 512) -> dict:
-    """Simple Groq HTTP call using the OpenAI-compatible endpoint.
-    Adjust as needed if using the official groq client.
-    """
-    url = f"{settings.groq_api_base.rstrip('/')}/openai/v1/chat/completions"
-    headers = {"Authorization": f"Bearer {settings.groq_api_key}", "Content-Type": "application/json"}
+def call_groq(prompt: str, model: str = "llama3-8b-8192", max_tokens: int = 512) -> dict:
+
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    
+    headers = {
+        "Authorization": f"Bearer {settings.groq_api_key}",
+        "Content-Type": "application/json"
+    }
+    
     body = {
         "model": model,
-        "messages": [{"role": "user", "content": prompt}],
+        "messages": [
+            {"role": "user", "content": prompt}
+        ],
         "max_tokens": max_tokens,
-        "temperature": 0.0,
+        "temperature": 0.0
     }
+
     resp = requests.post(url, json=body, headers=headers, timeout=30)
+
     if resp.status_code == 429:
-        raise RateLimitError("Groq rate limited: 429")
+        raise RateLimitError("Groq rate limited")
+    
     resp.raise_for_status()
     return resp.json()
