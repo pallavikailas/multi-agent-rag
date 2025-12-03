@@ -3,7 +3,7 @@ from langchain_community.vectorstores import Chroma
 from .config import settings
 
 import warnings
-warnings.filterwarnings("ignore", category=UserWarning, module="langchain")
+warnings.filterwarnings("ignore")
 
 def build_vectorstore(documents):
     emb = HuggingFaceEmbeddings(model_name=settings.embedding_model)
