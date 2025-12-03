@@ -9,7 +9,7 @@ class DeepOrchestrator:
         self.qa = QARetrievalAgent(retriever)
 
     async def handle_query(self, query: str):
-        docs = self.retriever.get_relevant_documents(query)
+        docs = await self.retriever.ainvoke(query)
         tasks = [
             asyncio.create_task(self.summarizer.run(docs)),
             asyncio.create_task(self.qa.run(query)),
