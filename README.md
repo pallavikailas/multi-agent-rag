@@ -29,7 +29,7 @@ Assignment requirement matched:
 
 ```
                           ┌──────────────────────────────┐
-                          │          User Query           │
+                          │          User Query          │
                           └──────────────────────────────┘
                                        │
                                        ▼
@@ -39,22 +39,22 @@ Assignment requirement matched:
                            └────────────────────────┘
                              │                    │
                 ┌────────────┘                    └─────────────┐
-                ▼                                                ▼
+                ▼                                               ▼
    ┌───────────────────────────┐                  ┌──────────────────────────┐
    │     Retrieval QA Agent    │                  │     Summarizer Agent     │
    │  - Retrieves chunks       │                  │ - Summaries context      │
    │  - Queries Groq           │                  │ - Metadata extraction    │
    └───────────────────────────┘                  └──────────────────────────┘
-                │                                                │
+                │                                                 │
                 └──────────────┐                   ┌──────────────┘
-                                ▼                   ▼
+                               ▼                   ▼
                           ┌────────────────────────────────────────┐
-                          │      Merge Final Agent Outputs          │
+                          │      Merge Final Agent Outputs         │
                           └────────────────────────────────────────┘
                                        │
                                        ▼
                             ┌──────────────────────────────┐
-                            │         Final Answer          │
+                            │         Final Answer         │
                             └──────────────────────────────┘
 ```
 
@@ -64,48 +64,48 @@ Assignment requirement matched:
 
 ```
                     ┌─────────────────────────────┐
-                    │     PDF Files in /data       │
+                    │     PDF Files in /data      │
                     └─────────────────────────────┘
                                   │
                                   ▼
            ┌──────────────────────────────────────────────────┐
-           │               Ingestion Pipeline                  │
-           │  - DirectoryLoader (PDF)                          │
-           │  - RecursiveCharacterTextSplitter (1k/200)        │
+           │               Ingestion Pipeline                 │
+           │  - DirectoryLoader (PDF)                         │
+           │  - RecursiveCharacterTextSplitter (1k/200)       │
            └──────────────────────────────────────────────────┘
                                   │
                                   ▼
              ┌───────────────────────────────────────┐
-             │     Embeddings (Sentence Transformers) │
+             │   Embeddings (Sentence Transformers)  │
              └───────────────────────────────────────┘
                                   │
                                   ▼
                      ┌─────────────────────────┐
                      │      Vectorstore        │
-                     │ (FAISS / ChromaDB)      │
+                     │   (FAISS / ChromaDB)    │
                      └─────────────────────────┘
                                   │
                                   ▼
                      ┌─────────────────────────┐
-                     │     Retriever API        │
+                     │     Retriever API       │
                      └─────────────────────────┘
                                   │
                                   ▼
                    ┌────────────────────────────────┐
-                   │  Multi-Agent Orchestrator       │
+                   │    Multi-Agent Orchestrator    │
                    └────────────────────────────────┘
                         │                    │
                         ▼                    ▼
             ┌─────────────────┐     ┌───────────────────┐
-            │ QA Agent         │     │ Summarizer Agent  │
-            │ → Groq LLM       │     │ → Groq LLM        │
+            │ QA Agent        │     │ Summarizer Agent  │
+            │ → Groq LLM      │     │ → Groq LLM        │
             └─────────────────┘     └───────────────────┘
                         │                    │
-                        └──────────────┬─────┘
-                                       ▼
-                         ┌────────────────────────┐
-                         │   Final Answer + Summary│
-                         └────────────────────────┘
+                        └───────────┬────────┘
+                                    ▼
+                       ┌────────────────────────┐
+                       │ Final Answer + Summary │
+                       └────────────────────────┘
 ```
 
 ---
@@ -143,11 +143,12 @@ Start
 ChunkRetriever
  │
  ├───────────── QA_Agent ────────────────┐
- │                                        │
- └──────────── Summarizer_Agent ──────────┘
+ │                                       │
+ └──────────── Summarizer_Agent ─────────┘
                      │
                      ▼
                 MergeOutputs
+                     │ 
                      ▼
                     End
 ```
@@ -170,7 +171,7 @@ nano .env
 
 Add:
 ```
-GROQ_API_KEY=gsk_xxxxx
+GROQ_API_KEY= <enter your api key here>
 ```
 
 ---
