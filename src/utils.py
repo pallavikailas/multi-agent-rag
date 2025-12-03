@@ -14,7 +14,7 @@ def retry_on_rate_limit():
     )
 
 @retry_on_rate_limit()
-def call_groq(prompt: str, model: str = "llama3-8b-8192", max_tokens: int = 512) -> dict:
+def call_groq(prompt: str, model: str = "llama-3.1-8b-instant", max_tokens: int = 512) -> dict:
 
     url = "https://api.groq.com/openai/v1/chat/completions"
     
