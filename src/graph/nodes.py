@@ -1,4 +1,4 @@
-from src.deepagents.manager import build_deep_agent
+from src.deep_agents.manager import build_deep_agent
 from src.agents.qa_agent import QAAAgent
 from src.agents.summarizer import SummarizerAgent
 
