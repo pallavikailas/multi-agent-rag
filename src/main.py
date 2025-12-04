@@ -17,6 +17,7 @@ async def demo_query(query: str):
     retriever = vectordb.as_retriever(search_kwargs={"k": 5})
     state = {
         "query": query,
+        "retriever": retriever,
         "context": [d.page_content for d in retriever._get_relevant_documents(query, run_manager=None)],
         "qa_output": None,
         "summary": None
