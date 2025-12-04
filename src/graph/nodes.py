@@ -1,5 +1,5 @@
 import asyncio
-from src.agents.qa_agent import QAAAgent
+from src.agents.qa_agent import QAAgent
 from src.agents.summarizer import SummarizerAgent
 
 
