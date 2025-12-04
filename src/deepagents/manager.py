@@ -1,33 +1,19 @@
-from deepagents import Agent, Orchestrator
+from deepagents import DeepAgent
 
+def build_deep_agent(qa_func, summary_func):
+    agent = DeepAgent(
+        name="RAG-Agent",
+        system_prompt="You are a RAG supervisor agent. Use tools to answer queries."
+    )
 
-class QAADeepAgent(Agent):
-    def __init__(self, qa_func):
-        super().__init__("qa_agent")
-        self.qa_func = qa_func
+    @agent.tool
+    async def qa_tool(query: str, docs: list):
+        """Answer a question using retrieved documents."""
+        return await qa_func(query, docs)
 
-    async def run(self, state):
-        answer = await self.qa_func(state["query"], state["docs"])
-        return {"answer": answer}
+    @agent.tool
+    async def summary_tool(docs: list):
+        """Summarize retrieved documents."""
+        return await summary_func(docs)
 
-
-class SummDeepAgent(Agent):
-    def __init__(self, summarizer_func):
-        super().__init__("summarizer_agent")
-        self.summarizer_func = summarizer_func
-
-    async def run(self, state):
-        summary = await self.summarizer_func(state["docs"])
-        return {"summary": summary}
-
-
-class RAGOrchestrator(Orchestrator):
-    def route(self, state):
-        # Determine next agent based on state
-        if "docs" not in state:
-            return "retriever"
-
-        if "answer" not in state:
-            return "qa_agent"
-
-        return "summarizer_agent"
+    return agent
