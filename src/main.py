@@ -23,7 +23,7 @@ async def demo_query(query: str):
     retriever = vectordb.as_retriever(search_kwargs={"k": 5})
 
     # 2. Instantiate your existing agents
-    qa_agent = QAAAgent(retriever)
+    qa_agent = QAAgent(retriever)
     summ_agent = SummarizerAgent()
 
     # 3. Wrap your agents as deep agent tools
