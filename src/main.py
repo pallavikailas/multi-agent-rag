@@ -4,7 +4,7 @@ from .retriever import build_vectorstore
 from .config import settings
 
 from deepagents import create_deep_agent
-from src.agents.qa_agent import QAAAgent
+from src.agents.qa_agent import QAAgent
 from src.agents.summarizer import SummarizerAgent
 
 
