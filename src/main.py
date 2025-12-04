@@ -4,49 +4,12 @@ from .retriever import build_vectorstore
 from .config import settings
 
 from langchain_groq import ChatGroq
-from deepagents import Orchestrator 
+from deepagents import DeepAgent 
 
 
 # ---------------------------
-# Disable DeepAgents built-ins
+# Build RAG system
 # ---------------------------
-def create_rag_agent(model, tools):
-    """
-    Wrapper to ensure DeepAgents v0.2.x ONLY uses our tools
-    and disables all builtin tools that cause tool_use_failed errors.
-    """
-    orch = Orchestrator(
-        model=model,
-        extra_tools=tools,      # <--- forces ONLY these tools
-        enable_fs=False,        # disable filesystem
-        enable_code_exec=False, # disable terminal + code execution
-    )
-    return orch
-
-
-# ---------------------------------
-# RAG Tools (QA + Summarization)
-# ---------------------------------
-from langchain.tools import tool
-
-
-@tool
-def qa_tool(query: str, docs: list):
-    """Answer a question using retrieved docs."""
-    text = "\n\n".join(d.page_content for d in docs[:3])
-    return f"Context:\n{text}\n\nQuestion: {query}"
-
-
-@tool
-def summarizer_tool(docs: list):
-    """Summarize retrieved docs."""
-    text = "\n\n".join(d.page_content for d in docs[:3])
-    return f"Summarize this:\n{text}"
-
-
-# -------------------
-# System construction
-# -------------------
 def build_system():
     docs = load_documents(settings.data_dir)
     print(f"Loaded {len(docs)} documents")
@@ -58,32 +21,54 @@ def build_system():
     return vectordb
 
 
-# -------------------
-# Demo query pipeline
-# -------------------
+# ---------------------------
+# Use DeepAgent as a SIMPLE LLM layer
+# ---------------------------
 async def demo_query(query: str):
     vectordb = build_system()
 
-    retriever = vectordb.as_retriever(search_kwargs={"k": 2})  # reduced to prevent token overflow
+    # Retrieval
+    retriever = vectordb.as_retriever(search_kwargs={"k": 2})
+    docs = retriever.invoke(query)
+    context = "\n\n".join(d.page_content for d in docs[:3])
 
-    # Use supported Groq model
+    # Groq LLM
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",
         temperature=0,
         api_key=settings.groq_api_key,
     )
 
-    # Create DeepAgent orchestrator with ONLY our RAG tools
-    deep_agent = create_rag_agent(
-        model=llm,
-        tools=[qa_tool, summarizer_tool],
+    # DeepAgent (as plain LLM caller)
+    agent = DeepAgent(model=llm)
+
+    # Create final prompt manually
+    prompt = (
+        "You are a helpful RAG assistant.\n"
+        "Use ONLY the context below to answer.\n"
+        "If the answer is not in the context, say 'I don't know'.\n\n"
+        f"Context:\n{context}\n\n"
+        f"Question: {query}\n\n"
+        "Answer:"
     )
 
-    # Run the DeepAgent orchestration
-    result = await deep_agent.ainvoke({
-        "query": query,
-        "retriever": retriever
-    })
+    # Call DeepAgent without tools
+    result = await agent.ainvoke(prompt)
 
-    print("\n--- RESULT ---")
-    print(result)
+    print("\n--- ANSWER ---\n")
+    print(result["output"])
+
+
+# ---------------------------
+# CLI entry
+# ---------------------------
+if __name__ == "__main__":
+    import sys
+    import os
+
+    if not sys.stdin.isatty():
+        query = os.environ.get("DEMO_QUERY", "What is the main point of the documents?")
+    else:
+        query = input("\n🔍 Enter your query: ").strip() or "What is the main point of the documents?"
+
+    asyncio.run(demo_query(query))
