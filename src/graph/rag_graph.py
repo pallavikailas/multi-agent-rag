@@ -3,7 +3,7 @@ from typing import TypedDict, List, Optional
 
 from src.agents.qa_agent import QARetrievalAgent
 from src.agents.summarizer import SummarizerAgent
-from src.retriever.retriever import ChunkRetriever
+from src.retriever import ChunkRetriever
 
 
 class RAGState(TypedDict):
