@@ -38,7 +38,7 @@ async def demo_query(query: str):
         return await summ_agent.run(docs)
 
     llm = ChatGroq(
-        model="llama-3.1-8b-instant",
+        model="llama-3.1-70b-versatile",
         temperature=0,
         api_key=settings.groq_api_key,
     )
