@@ -1,15 +1,14 @@
 groq
 
 # LangChain core + community split
-langchain==1.1.0
+langchain
 langchain-core
 langchain-community
+langchain-openai
 langchain-text-splitters
 
 # LangGraph
 langgraph
-langchain
-langchain-openai
 deepagents
 
 # Document loaders & PDF support
