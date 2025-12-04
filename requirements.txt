@@ -8,6 +8,9 @@ langchain-text-splitters
 
 # LangGraph
 langgraph
+langchain
+langchain-openai
+deepagents
 
 # Document loaders & PDF support
 pypdf
