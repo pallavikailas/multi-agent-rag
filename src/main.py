@@ -4,7 +4,9 @@ from .retriever import build_vectorstore
 from .config import settings
 
 from deepagents import create_deep_agent
-from src.agents.qa_agent import QAAgent
+from langchain_groq import ChatGroq
+
+from src.agents.qa_agent import QAAAgent
 from src.agents.summarizer import SummarizerAgent
 
 
@@ -23,39 +25,48 @@ async def demo_query(query: str):
     retriever = vectordb.as_retriever(search_kwargs={"k": 5})
 
     # 2. Instantiate your existing agents
-    qa_agent = QAAgent(retriever)
+    qa_agent = QAAAgent(retriever)
     summ_agent = SummarizerAgent()
 
-    # 3. Wrap your agents as deep agent tools
+    # 3. Wrap your agents as DeepAgent tools
     async def qa_tool(query: str, docs: list):
-        """Use your QA agent with context docs."""
+        """Answer a question using retrieved documents."""
         return await qa_agent.run(query)
 
     async def summarizer_tool(docs: list):
-        """Use summarizer on retrieved docs."""
+        """Summarize retrieved documents."""
         return await summ_agent.run(docs)
 
-    # 4. Create a DeepAgent with both tools
+    # 4. Groq LLM (this is CRITICAL — prevents DeepAgents from defaulting to Anthropic)
+    llm = ChatGroq(
+        model="llama3-70b-8192",
+        temperature=0,
+    )
+
+    # 5. Create DeepAgent
     deep_agent = create_deep_agent(
         tools=[qa_tool, summarizer_tool],
         system_prompt=(
             "You are a retrieval-augmented deep agent. "
-            "First use qa_tool(query, docs) to answer. "
-            "Then use summarizer_tool(docs) to generate a summary."
-        )
+            "Given a query and retrieved documents, use qa_tool(query, docs) "
+            "to answer the question. Then optionally call summarizer_tool(docs) "
+            "to produce a concise summary."
+        ),
+        model=llm,
     )
 
-    # 5. Retrieve docs using LangChain
+    # 6. Retrieve documents
     docs = await retriever.ainvoke(query)
 
-    # 6. Pass docs + query into deep agent
+    # 7. Run DeepAgent with the context + query
     result = await deep_agent.ainvoke({
         "query": query,
         "docs": docs
     })
 
-    print("\n--- FINAL DEEPAGENT OUTPUT ---")
+    print("\n==================== FINAL OUTPUT ====================")
     print(result["messages"][-1]["content"])
+    print("======================================================\n")
 
 
 if __name__ == "__main__":
