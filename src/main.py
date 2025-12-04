@@ -19,7 +19,7 @@ async def demo_query(query: str):
         "query": query,
         "retriever": retriever,
         "context": [d.page_content for d in retriever._get_relevant_documents(query, run_manager=None)],
-        "qa_output": None,
+        "answer": None,
         "summary": None
     }
 
@@ -33,7 +33,6 @@ async def demo_query(query: str):
 if __name__ == "__main__":
     import os
     import sys
-    import asyncio
 
     # If running inside Docker (no interactive terminal)
     if not sys.stdin.isatty():
