@@ -61,6 +61,7 @@ async def demo_query(query: str):
             "- summarizer_tool(payload) -> returns a short summary string for the given docs\n"
             "Never call or rely on any built-in deepagents tools such as write_todos, filesystem, or subagents."
         ),
+        enable_subagents=False,
     )
 
     # 5) Prepare inputs and invoke the deep agent
