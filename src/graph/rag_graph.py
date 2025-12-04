@@ -32,7 +32,15 @@ def qa_node(state: RAGState):
 
 def summarizer_node(state: RAGState):
     agent = SummarizerAgent()
-    summary = agent.summarize(context=state["context"])
+    
+    # Convert strings back into fake docs
+    class FakeDoc:
+        def __init__(self, text):
+            self.page_content = text
+
+    documents = [FakeDoc(t) for t in state["context"]]
+    summary = asyncio.run(agent.run(documents))
+
     return {"summary": summary}
 
 
