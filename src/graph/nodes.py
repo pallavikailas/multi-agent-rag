@@ -1,4 +1,4 @@
-from src.deepagents.manager import QAADeepAgent, SummDeepAgent
+from src.deepagents.manager import build_deep_agent
 from src.agents.qa_agent import QAAAgent
 from src.agents.summarizer import SummarizerAgent
 
@@ -9,13 +9,22 @@ async def retrieve_node(state):
     return {"docs": docs}
 
 
-async def qa_node(state):
+async def deepagent_node(state):
+    query = state["query"]
+    docs = state["docs"]
+
     qa_agent = QAAAgent(state["retriever"])
-    deep_agent = QAADeepAgent(lambda q, d: qa_agent.run(q))
-    return await deep_agent.run(state)
+    summarizer = SummarizerAgent()
 
+    agent = build_deep_agent(
+        qa_func=lambda q, d: qa_agent.run(q),
+        summary_func=lambda d: summarizer.run(d)
+    )
 
-async def summarize_node(state):
-    summ_agent = SummarizerAgent()
-    deep_agent = SummDeepAgent(summ_agent.run)
-    return await deep_agent.run(state)
+    result = await agent.arun(
+        f"Given the query '{query}', use tools (qa_tool or summary_tool) to produce the final answer.",
+        docs=docs,
+        query=query
+    )
+
+    return {"final": result}
