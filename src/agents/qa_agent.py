@@ -1,7 +1,7 @@
 from .base_agent import BaseAgent
 from ..utils import call_groq
 
-class QARetrievalAgent(BaseAgent):
+class QAAAgent(BaseAgent):
     def __init__(self, retriever):
         self.retriever = retriever
 
