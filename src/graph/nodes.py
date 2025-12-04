@@ -1,28 +1,21 @@
-import asyncio
-from src.agents.qa_agent import QAAgent
+from src.deepagents.manager import QAADeepAgent, SummDeepAgent
+from src.agents.qa_agent import QAAAgent
 from src.agents.summarizer import SummarizerAgent
 
 
 async def retrieve_node(state):
     retriever = state["retriever"]
-    query = state["query"]
-
-    docs = await retriever.ainvoke(query)
+    docs = await retriever.ainvoke(state["query"])
     return {"docs": docs}
 
 
 async def qa_node(state):
-    retriever = state["retriever"]
-    query = state["query"]
-
-    agent = QAAAgent(retriever=retriever)
-    answer = await agent.run(query)
-    return {"answer": answer}
+    qa_agent = QAAAgent(state["retriever"])
+    deep_agent = QAADeepAgent(lambda q, d: qa_agent.run(q))
+    return await deep_agent.run(state)
 
 
 async def summarize_node(state):
-    docs = state["docs"]
-
-    agent = SummarizerAgent()
-    summary = await agent.run(docs)
-    return {"summary": summary}
+    summ_agent = SummarizerAgent()
+    deep_agent = SummDeepAgent(summ_agent.run)
+    return await deep_agent.run(state)
