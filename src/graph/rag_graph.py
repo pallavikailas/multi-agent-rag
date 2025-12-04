@@ -1,7 +1,7 @@
 from langgraph.graph import StateGraph, END
 from typing import TypedDict, List, Optional
 
-from src.agents.qa_agent import QAAgent
+from src.agents.qa_agent import QARetrievalAgent
 from src.agents.summarizer_agent import SummarizerAgent
 from src.retriever.retriever import ChunkRetriever
 
@@ -22,7 +22,7 @@ def retrieve_node(state: RAGState):
 
 
 def qa_node(state: RAGState):
-    agent = QAAgent()
+    agent = QARetrievalAgent()
     answer = agent.answer(question=state["query"], context=state["context"])
     return {"qa_output": answer}
 
