@@ -1,7 +1,7 @@
 import asyncio
 from .ingest import load_documents, chunk_documents
 from .retriever import build_vectorstore
-from .orchestrator import DeepOrchestrator
+from .graph.rag_graph import compiled_rag_graph
 from .config import settings
 
 def build_system():
@@ -15,17 +15,24 @@ def build_system():
 async def demo_query(query: str):
     vectordb = build_system()
     retriever = vectordb.as_retriever(search_kwargs={"k": 5})
-    orchestrator = DeepOrchestrator(retriever)
-    out = await orchestrator.handle_query(query)
+    state = {
+        "query": query,
+        "retriever": retriever,
+        "context": [d.page_content for d in retriever._get_relevant_documents(query, run_manager=None)],
+        "qa_output": None,
+        "summary": None
+    }
+
+    out = compiled_rag_graph.invoke(state)
+
     print("--- Summary ---")
     print(out['summary'])
     print("--- Answer ---")
-    print(out['answer'])
+    print(out['qa_output'])
 
 if __name__ == "__main__":
     import os
     import sys
-    import asyncio
 
     # If running inside Docker (no interactive terminal)
     if not sys.stdin.isatty():
