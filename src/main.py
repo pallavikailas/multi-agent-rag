@@ -6,7 +6,7 @@ from .config import settings
 from deepagents import create_deep_agent
 from langchain_groq import ChatGroq
 
-from src.agents.qa_agent import QAAAgent
+from src.agents.qa_agent import QAAgent
 from src.agents.summarizer import SummarizerAgent
 
 
@@ -25,7 +25,7 @@ async def demo_query(query: str):
     retriever = vectordb.as_retriever(search_kwargs={"k": 5})
 
     # 2. Instantiate your existing agents
-    qa_agent = QAAAgent(retriever)
+    qa_agent = QAAgent(retriever)
     summ_agent = SummarizerAgent()
 
     # 3. Wrap your agents as DeepAgent tools
