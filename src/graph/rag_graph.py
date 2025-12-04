@@ -3,8 +3,9 @@ from typing import TypedDict, List, Optional
 
 from src.agents.qa_agent import QARetrievalAgent
 from src.agents.summarizer import SummarizerAgent
-from src.retriever import build_vectorstore
+from src.ingest import load_documents, chunk_documents
 from src.config import settings
+from src.retriever import build_vectorstore
     
 
 class RAGState(TypedDict):
