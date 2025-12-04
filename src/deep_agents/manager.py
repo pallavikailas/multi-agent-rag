@@ -1,19 +1,22 @@
-from deepagents import DeepAgent
+from deepagents import create_deep_agent
 
-def build_deep_agent(qa_func, summary_func):
-    agent = DeepAgent(
-        name="RAG-Agent",
-        system_prompt="You are a RAG supervisor agent. Use tools to answer queries."
+def build_rag_deep_agent(qa_tool, summarizer_tool, model=None):
+    """
+    qa_tool: async function (query: str, docs: list) -> answer string
+    summarizer_tool: async function (docs: list) -> summary string
+    model: optional LangChain chat model (Groq or other)
+
+    Returns a ready-to-run deep agent.
+    """
+    tools = [qa_tool, summarizer_tool]
+    instructions = (
+        "You are an assistant that answers queries using the 'qa_tool' on provided documents, "
+        "and then optionally uses 'summarizer_tool' to produce a concise summary. "
+        "When answering a user query, first read the documents, then answer."
     )
-
-    @agent.tool
-    async def qa_tool(query: str, docs: list):
-        """Answer a question using retrieved documents."""
-        return await qa_func(query, docs)
-
-    @agent.tool
-    async def summary_tool(docs: list):
-        """Summarize retrieved documents."""
-        return await summary_func(docs)
-
+    agent = create_deep_agent(
+        tools=tools,
+        system_prompt=instructions,
+        model=model
+    )
     return agent
