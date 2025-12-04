@@ -20,7 +20,7 @@ def retrieve_node(state: RAGState):
     docs = load_documents(settings.data_dir)
     chunks = chunk_documents(docs)
     retriever = build_vectorstore(chunks)
-    ctx = retriever.get_relevant_documents(state["query"])
+    ctx = retriever._get_relevant_documents(state["query"])
     return {"context": [d.page_content for d in ctx]}
 
 
