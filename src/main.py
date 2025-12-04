@@ -54,6 +54,7 @@ async def demo_query(query: str):
             "to produce a concise summary."
         ),
         model=llm,
+        allow_builtin_tools=False,
     )
 
     # 6. Retrieve documents
