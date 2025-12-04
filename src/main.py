@@ -1,8 +1,10 @@
 import asyncio
 from .ingest import load_documents, chunk_documents
 from .retriever import build_vectorstore
-from .orchestrator import DeepOrchestrator
 from .config import settings
+
+from src.graph.rag_graph import build_graph
+
 
 def build_system():
     docs = load_documents(settings.data_dir)
@@ -12,22 +14,31 @@ def build_system():
     vectordb = build_vectorstore(chunks)
     return vectordb
 
+
 async def demo_query(query: str):
     vectordb = build_system()
     retriever = vectordb.as_retriever(search_kwargs={"k": 5})
-    orchestrator = DeepOrchestrator(retriever)
-    out = await orchestrator.handle_query(query)
+
+    graph = build_graph()
+
+    state = {
+        "query": query,
+        "retriever": retriever
+    }
+
+    out = graph.invoke(state)
+
     print("--- Summary ---")
-    print(out['summary'])
+    print(out.get("summary"))
     print("--- Answer ---")
-    print(out['answer'])
+    print(out.get("answer"))
+
 
 if __name__ == "__main__":
     import os
     import sys
     import asyncio
 
-    # If running inside Docker (no interactive terminal)
     if not sys.stdin.isatty():
         query = os.environ.get("DEMO_QUERY", "What is the main point of the documents?")
         print(f"\n[Docker Mode] Using query: {query}\n")
