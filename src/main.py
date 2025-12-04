@@ -26,7 +26,10 @@ async def demo_query(query: str):
         "retriever": retriever
     }
 
-    out = graph.invoke(state)
+    out = await graph.invoke({
+        "query": query,
+        "retriever": retriever
+    })
 
     print("--- Summary ---")
     print(out.get("summary"))
