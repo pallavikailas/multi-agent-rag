@@ -37,11 +37,12 @@ async def demo_query(query: str):
         """Summarize retrieved documents."""
         return await summ_agent.run(docs)
 
-    # 4. Groq LLM (this is CRITICAL — prevents DeepAgents from defaulting to Anthropic)
     llm = ChatGroq(
         model="llama3-70b-8192",
         temperature=0,
+        api_key=settings.groq_api_key,
     )
+
 
     # 5. Create DeepAgent
     deep_agent = create_deep_agent(
