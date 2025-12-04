@@ -3,7 +3,7 @@ from typing import TypedDict, List, Optional
 
 from src.agents.qa_agent import QARetrievalAgent
 from src.agents.summarizer import SummarizerAgent
-from src.retriever import ChunkRetriever
+from src.retriever import build_vectorstore
 
 
 class RAGState(TypedDict):
@@ -16,7 +16,7 @@ class RAGState(TypedDict):
 # 1. Node functions --------------------------------------------------
 
 def retrieve_node(state: RAGState):
-    retriever = ChunkRetriever()
+    retriever = build_vectorstore()
     ctx = retriever.get_relevant_documents(state["query"])
     return {"context": [d.page_content for d in ctx]}
 
