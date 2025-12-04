@@ -62,14 +62,23 @@ multi-agent-rag/
 
 ---
 
-# ⚙️ Installation
+# 📦 Setup
 
 ```bash
 git clone https://github.com/pallavikailas/multi-agent-rag.git
 cd multi-agent-rag
+
 python3 -m venv .venv
 source .venv/bin/activate
+
 pip install -r requirements.txt
+cp .env.example .env
+nano .env
+```
+
+Add:
+```
+GROQ_API_KEY= <enter your api key here>
 ```
 
 ---
@@ -96,6 +105,19 @@ Example:
 
 ---
 
+# 🐳 Run with Docker
+
+```
+docker-compose build
+docker-compose up
+docker-compose run -e DEMO_QUERY="What does Rule 10b-5(b) require?" app
+```
+```
+docker-compose down
+```
+
+---
+
 # 🧠 Components
 
 ### 🔍 Retriever Node  
@@ -109,13 +131,6 @@ Produces a concise TL;DR summary of retrieved documents.
 
 ### 🔄 LangGraph State Machine  
 Combines outputs into a stable, deterministic multi-agent workflow.
-
----
-
-# 🤝 Contributing
-
-Pull requests welcome!  
-Open issues for improvements or feature additions.
 
 ---
 
