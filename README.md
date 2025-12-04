@@ -1,31 +1,48 @@
-# 🚀 Multi-Agent RAG Orchestration  
-### LangChain · LangGraph · DeepAgents · Groq  
-![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
-![LangChain](https://img.shields.io/badge/LangChain-v1.1-green)
-![Groq](https://img.shields.io/badge/Powered%20By-Groq-orange)
-![DeepAgents](https://img.shields.io/badge/DeepAgents-Architecture-blueviolet)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+# 🚀 Multi-Agent RAG (LangGraph Powered)
+
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)]()
+[![LangGraph](https://img.shields.io/badge/LangGraph-Orchestration-orange)]()
+[![Groq](https://img.shields.io/badge/Groq-LLM-green)]()
+[![ChromaDB](https://img.shields.io/badge/VectorStore-Chroma-purple)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)]()
+
+A highly modular **Retrieval-Augmented Generation** system built on:
+- **LangGraph** for multi-step orchestration  
+- **Chroma / FAISS** for semantic retrieval  
+- **Groq-powered agents** for QA + summarization  
+- **Document ingestion & chunking** for accurate context retrieval  
 
 ---
 
-## 🌐 Overview
+# 📐 System Architecture
 
-This project implements a **production-grade Multi‑Agent RAG workflow** using:
+## 🔹 LangGraph Multi-Agent Workflow (Mermaid)
 
-- **LangChain** for document ingestion, chunking, embeddings, retrievers  
-- **LangGraph-inspired orchestration** (graph execution pattern)  
-- **DeepAgents-style multi-agent roles** with async workflows  
-- **Groq LLMs** (FREE API) for ultra-fast inference  
-- **Tenacity** for rate-limit handling  
-- **Local PDFs** under `/data` as the knowledge corpus  
+```mermaid
+flowchart TD
 
-Assignment requirement matched:
+    Q[User Query]
 
-> “Using LangChain, LangGraph, and DeepAgents, build a small multi-agent RAG workflow using the provided files as data, with appropriate chunking, and using free LLM APIs (Groq).”
+    subgraph Graph[LangGraph DAG]
+    R[Retrieve Node<br>• VectorStore Retriever<br>• Returns chunks]
+    QA[QA Node<br>• QARetrievalAgent<br>• Groq LLM<br>• Generates Answer]
+    S[Summarizer Node<br>• SummarizerAgent<br>• TL;DR Summary]
+    end
+
+    M[Merge Outputs<br>Combine Answer + Summary]
+    O[Final Output]
+
+    Q --> Graph
+    R --> QA
+    R --> S
+    QA --> M
+    S --> M
+    M --> O
+```
 
 ---
 
-# 🏗️ Architecture Diagram (High-Level)
+## 🔹 Full ASCII Architecture Diagram
 
 ```
                         ┌──────────────────────────────┐
@@ -33,184 +50,115 @@ Assignment requirement matched:
                         └──────────────────────────────┘
                                        │
                                        ▼
-                          ┌────────────────────────┐
-                          │   Deep Orchestrator    │
-                          │ (Async Task Manager)   │
-                          └────────────────────────┘
-                             │                    │
-                ┌────────────┘                    └─────────────┐
-                ▼                                               ▼
-   ┌───────────────────────────┐                  ┌──────────────────────────┐
-   │     Retrieval QA Agent    │                  │     Summarizer Agent     │
-   │  - Retrieves chunks       │                  │ - Summaries context      │
-   │  - Queries Groq           │                  │ - Metadata extraction    │
-   └───────────────────────────┘                  └──────────────────────────┘
-                │                                                 │
-                └──────────────┐                   ┌──────────────┘
-                               ▼                   ▼
-                    ┌────────────────────────────────────────┐
-                    │      Merge Final Agent Outputs         │
-                    └────────────────────────────────────────┘
+                           ┌────────────────────────┐
+                           │     LangGraph DAG      │
+                           │  (State + Node Flow)   │
+                           └────────────────────────┘
+                                       │
+                ┌──────────────────────┼──────────────────────────┐
+                ▼                      ▼                          ▼
+   ┌───────────────────────────┐   ┌──────────────────────┐   ┌──────────────────────────┐
+   │       Retrieve Node       │   │       QA Node         │   │   Summarizer Node        │
+   │ - Uses VectorStore        │   │ - Uses QARetrieval    │   │ - Summarizes retrieved   │
+   │   retriever (Chroma)      │   │   Agent (Groq LLM)    │   │   context (Groq LLM)     │
+   │ - Returns relevant chunks │   │ - Produces answer     │   │ - Produces TL;DR         │
+   └───────────────────────────┘   └──────────────────────┘   └──────────────────────────┘
+                │                       │                          │
+                └───────────────┬───────┴───────────────┬─────────┘
+                                ▼                       ▼
+                        ┌───────────────────────────────────────────┐
+                        │          LangGraph State Merger           │
+                        │  (Combines answer + summary into output)  │
+                        └───────────────────────────────────────────┘
                                         │
                                         ▼
                          ┌──────────────────────────────┐
-                         │         Final Answer         │
+                         │         Final Output          │
+                         │   Answer + Summary Returned   │
                          └──────────────────────────────┘
 ```
 
 ---
 
-# 📚 Data Flow Diagram (Detailed)
+# 📦 Project Structure
+
+Auto-linked for GitHub:
 
 ```
-                    ┌─────────────────────────────┐
-                    │     PDF Files in /data      │
-                    └─────────────────────────────┘
-                                  │
-                                  ▼
-           ┌──────────────────────────────────────────────────┐
-           │               Ingestion Pipeline                 │
-           │  - DirectoryLoader (PDF)                         │
-           │  - RecursiveCharacterTextSplitter (1k/200)       │
-           └──────────────────────────────────────────────────┘
-                                  │
-                                  ▼
-             ┌───────────────────────────────────────┐
-             │   Embeddings (Sentence Transformers)  │
-             └───────────────────────────────────────┘
-                                  │
-                                  ▼
-                     ┌─────────────────────────┐
-                     │      Vectorstore        │
-                     │   (FAISS / ChromaDB)    │
-                     └─────────────────────────┘
-                                  │
-                                  ▼
-                     ┌─────────────────────────┐
-                     │     Retriever API       │
-                     └─────────────────────────┘
-                                  │
-                                  ▼
-                   ┌────────────────────────────────┐
-                   │    Multi-Agent Orchestrator    │
-                   └────────────────────────────────┘
-                        │                    │
-                        ▼                    ▼
-            ┌─────────────────┐       ┌───────────────────┐
-            │ QA Agent        │       │ Summarizer Agent  │
-            │ → Groq LLM      │       │ → Groq LLM        │
-            └─────────────────┘       └───────────────────┘
-                        │                    │
-                        └──────────┬─────────┘
-                                   ▼
-                       ┌────────────────────────┐
-                       │ Final Answer + Summary │
-                       └────────────────────────┘
+multi-agent-rag/
+├── src/
+│   ├── ingest.py           → Document loading & chunking
+│   ├── retriever.py        → VectorStore builder (Chroma/FAISS)
+│   ├── agents/
+│   │     ├── qa_agent.py   → QARetrievalAgent (Groq)
+│   │     └── summarizer_agent.py
+│   ├── graph/
+│   │     └── rag_graph.py  → LangGraph orchestration
+│   ├── config.py           → Settings for embeddings, paths
+│   └── main.py             → CLI Entry point
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-# 🤖 Agent Roles
-
-### 🔍 Retrieval QA Agent
-- Pulls top‑K chunks from vectorstore  
-- Builds query‑aware prompt  
-- Calls Groq (`llama‑3.1‑8b‑instant`)  
-- Returns focused, factual RAG answer  
-
-### 📝 Summarizer Agent
-- Uses retrieved context  
-- Produces high-level semantic summary  
-- Helps users understand context at a glance  
-
-### 🧠 Deep Orchestrator
-- Parallel async execution of agents  
-- Inspired by DeepAgents  
-- Manages:
-  - Retrieval
-  - Routing
-  - Parallelism
-  - Merging
-
----
-
-# 🕸️ LangGraph-Style DAG
-
-```
-Start
- │
- ▼
-ChunkRetriever
- │
- ├───────────── QA_Agent ────────────────┐
- │                                       │
- └──────────── Summarizer_Agent ─────────┘
-                     │
-                     ▼
-                MergeOutputs
-                     │ 
-                     ▼
-                    End
-```
-
----
-
-# 📦 Setup
+# ⚙️ Installation
 
 ```bash
 git clone https://github.com/pallavikailas/multi-agent-rag.git
 cd multi-agent-rag
-
 python3 -m venv .venv
 source .venv/bin/activate
-
 pip install -r requirements.txt
-cp .env.example .env
-nano .env
-```
-
-Add:
-```
-GROQ_API_KEY= <enter your api key here>
 ```
 
 ---
 
-# ▶️ Run
+# ▶️ Usage
+
+Run the query engine:
+
+```bash
+./.venv/bin/python -m src.main    
+```
+
+Example:
 
 ```
-./.venv/bin/python -m src.main
+🔍 Enter your query: <enter your desired query>
+
+--- Summary ---
+<generated summary>
+
+--- Answer ---
+<generated answer>
 ```
 
 ---
 
-# 🐳 Run with Docker
+# 🧠 Components
 
-```
-docker-compose build
-docker-compose up
-docker-compose run -e DEMO_QUERY="What does Rule 10b-5(b) require?" app
-```
-```
-docker-compose down
-```
----
+### 🔍 Retriever Node  
+Uses Chroma or FAISS to surface relevant embeddings.
 
-# ✔ Assignment Checklist
+### 🧠 QA Node (Groq LLM)  
+Answers based on retrieved texts using QARetrievalAgent.
 
-| Requirement | Status |
-|------------|--------|
-| Multi‑agent | ✅ |
-| LangChain used | ✅ |
-| LangGraph flow | ✓ Concept implemented |
-| DeepAgents-style | ✅ Parallel async pipeline |
-| Chunking | ✅ Recursive (1000 / 200) |
-| Provided PDF data | ✅ |
-| Free API | Groq |
-| Rate limiting | Tenacity Retry |
+### 📝 Summarizer Node  
+Produces a concise TL;DR summary of retrieved documents.
+
+### 🔄 LangGraph State Machine  
+Combines outputs into a stable, deterministic multi-agent workflow.
 
 ---
 
-# 📄 License  
-MIT
+# 🤝 Contributing
+
+Pull requests welcome!  
+Open issues for improvements or feature additions.
+
+---
+
+# 📜 License  
+MIT License — free to use, modify, and distribute.
 
