@@ -19,7 +19,7 @@ async def demo_query(query: str):
         "query": query,
         "retriever": retriever,
         "context": [d.page_content for d in retriever._get_relevant_documents(query, run_manager=None)],
-        "answer": None,
+        "qa_output": None,
         "summary": None
     }
 
@@ -28,7 +28,7 @@ async def demo_query(query: str):
     print("--- Summary ---")
     print(out['summary'])
     print("--- Answer ---")
-    print(out['answer'])
+    print(out['qa_output'])
 
 if __name__ == "__main__":
     import os
