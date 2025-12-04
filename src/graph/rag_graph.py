@@ -29,10 +29,7 @@ def qa_node(state: RAGState):
     retriever = state["retriever"]
     agent = QARetrievalAgent(retriever)
 
-    answer = asyncio.run(agent.run(
-        query=state["query"],
-        context=state["context"]
-    ))
+    answer = asyncio.run(agent.run(state["query"]))
 
     return {"qa_output": answer}
 
