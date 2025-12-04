@@ -10,6 +10,7 @@ from src.retriever import build_vectorstore
 
 class RAGState(TypedDict):
     query: str
+    retriever: any
     context: Optional[List[str]]
     qa_output: Optional[str]
     summary: Optional[str]
@@ -18,11 +19,9 @@ class RAGState(TypedDict):
 # 1. Node functions --------------------------------------------------
 
 def retrieve_node(state: RAGState):
-    docs = load_documents(settings.data_dir)
-    chunks = chunk_documents(docs)
-    retriever = build_vectorstore(chunks)
-    ctx = retriever._get_relevant_documents(state["query"],run_manager=None)
-    return {"context": [d.page_content for d in ctx]}
+    retriever = state["retriever"]
+    docs = retriever._get_relevant_documents(state["query"], run_manager=None)
+    return {"context": [d.page_content for d in docs]}
 
 
 def qa_node(state: RAGState):
