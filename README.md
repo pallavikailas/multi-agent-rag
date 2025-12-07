@@ -3,7 +3,6 @@
 ![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
 ![LangChain](https://img.shields.io/badge/LangChain-v1.1-green)
 ![Groq](https://img.shields.io/badge/Powered%20By-Groq-orange)
-![DeepAgents](https://img.shields.io/badge/DeepAgents-Architecture-blueviolet)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ---
