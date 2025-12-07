@@ -18,10 +18,6 @@ This project implements a **production-grade Multi‑Agent RAG workflow** using:
 - **Tenacity** for rate-limit handling  
 - **Local PDFs** under `/data` as the knowledge corpus  
 
-Assignment requirement matched:
-
-> “Using LangChain, LangGraph, and DeepAgents, build a small multi-agent RAG workflow using the provided files as data, with appropriate chunking, and using free LLM APIs (Groq).”
-
 ---
 
 # 🏗️ Architecture Diagram (High-Level)
